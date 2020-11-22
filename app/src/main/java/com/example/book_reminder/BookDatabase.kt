@@ -10,7 +10,7 @@ abstract class BookDatabase : RoomDatabase() {
     abstract fun bookDao() : BookDao
     companion object {
         private var INSTANCE : BookDatabase ? = null
-
+//tworzenie bazy danych
         fun getInstance(context: Context) : BookDatabase ?{
             if(INSTANCE == null)
             {
