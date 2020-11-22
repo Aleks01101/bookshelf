@@ -8,6 +8,8 @@ import android.view.MenuItem
 import android.widget.EditText
 import android.widget.RatingBar
 import androidx.appcompat.app.AlertDialog
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -17,9 +19,10 @@ class MainActivity : AppCompatActivity() {
      * w polu Klasa utwórzemy prywatny recyclerview
      */
     private  lateinit var list: RecyclerView
-    private val books = mutableListOf<Book>()
+
 
     private lateinit var adapter: BooksAdapter
+    private lateinit var model: BookViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,48 +31,22 @@ class MainActivity : AppCompatActivity() {
          * znajdujemy list za pomocą Id
          */
         list = findViewById(R.id.list)
+        // egzemplarz aktywnosci
+        model = ViewModelProvider(this).get(BookViewModel::class.java)
 
-        books.add(
-            Book(
-                    "War in Peace",
-                    "Lev Tolstoi",
-                    "2020-12-01",
-                    4.4f
-            )
+        //wyświetla wszytkie dodane książki
+        model.getAll().observe(this, Observer<List<Book>>{
+            val a = BooksAdapter(it)
+            list.adapter = a
+        }
         )
 
-        books.add(
-                Book(
-                        "Hui",
-                        "Lev Tolstoi",
-                        "2020-12-01",
-                        4.4f
-                )
-        )
 
-        books.add(
-                Book(
-                        "Idiot",
-                        "Lev Tolstoi",
-                        "2020-12-01",
-                        4.4f
-                )
-        )
-
-        books.add(
-                Book(
-                        "Anna Karenina",
-                        "Lev Tolstoi",
-                        "2020-12-01",
-                        4.4f
-                )
-        )
-        adapter = BooksAdapter(books)
         val layout = LinearLayoutManager(this)
         val decoration = DividerItemDecoration(this,layout.orientation)
         list.layoutManager = layout
         list.addItemDecoration(decoration)
-        list.adapter = adapter
+
 
     }
 /*
@@ -130,9 +107,13 @@ funkcja tworzenia okna dialogowego menu z dodaniem książki
             author.text.toString(),
             date.text.toString(),
             rating.rating)
+                /*
+                nastąpiło wstawienie książki na 0 element
+                 */
+        model.addBook(book)
         dialog.dismiss()
-        books.add(book)
-        adapter.notifyDataSetChanged()
+
+
     }
 
     builder.create().show()
